@@ -3,7 +3,9 @@ from tkinter import Frame
 from tkinter import PanedWindow
 from tkinter import ttk
 import tkinter as tk
-from game_section import GameSection
+from View.game_section import GameSection
+from View.menu_view import MenuView
+
 class MainWindow(Frame):
     MENU_WIDTH_RATIO = 0.33
     GAME_WIDTH_RATIO = 0.67
@@ -24,12 +26,6 @@ class MainWindow(Frame):
 
         game = GameSection(game_frame, 10)
         game.pack()
-dimension_x = 1280
-dimension_y = 720
 
-root = tk.Tk()
-root.title("main_window.py")
-root.geometry("1280x720")
-root.MainWindow = MainWindow(root, dimension_x, dimension_y)
-root.MainWindow.pack(fill=tk.BOTH, expand=True)
-root.mainloop()
+        menu = MenuView(menu_frame)
+        menu.pack()
