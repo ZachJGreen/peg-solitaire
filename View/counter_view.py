@@ -1,10 +1,8 @@
 import tkinter as tk
 from tkinter import Tk
 from tkinter import ttk
-# Pegs Remaining Counter
-# Moves Made Counter
 
-class counter_view(tk.Frame):
+class CounterView(tk.Frame):
 
     def __init__(self, parent):
         self.moves_made = 0
@@ -20,12 +18,3 @@ class counter_view(tk.Frame):
 
         moves_counter.pack(fill=tk.X)
         pegs_counter.pack(fill=tk.X)
-
-
-
-# root = Tk()
-# root.title("counter_view.py")
-# root.geometry("800x300")
-# box = counter_view(root)
-# box.pack(fill=tk.NONE, expand=True)
-# root.mainloop()
