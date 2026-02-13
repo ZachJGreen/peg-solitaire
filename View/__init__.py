@@ -3,3 +3,6 @@ from View.counter_view import CounterView
 from View.game_grid import GameGrid
 from View.game_section import GameSection
 from View.menu_view import MenuView
+from View.board_info_view import BoardInfoView
+from View.game_controls_view import GameControlsView
+from View.settings_view import SettingsView
