@@ -10,4 +10,4 @@ class GameGrid(tk.Frame):
                 cell = tk.Button(self, width=2, height=2, command=lambda r=row, c=col: onclick(r, c))
                 row_list.append(cell)
                 cell.grid(row=row, column=col)
-            self.grid_buttons.append(row_list)
+            grid_buttons.append(row_list)
