@@ -6,6 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Peg solitaire game built with Python and Tkinter. Currently in early development — only the UI shell exists with no game logic implemented yet.
 
+## Environment Setup
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 ## Running the Application
 
 ```bash
