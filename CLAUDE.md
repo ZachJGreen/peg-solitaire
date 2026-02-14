@@ -47,6 +47,7 @@ App (Tk root, 1280x720) → main_window (PanedWindow, 33/67 split)
 - When requested to "grade" or "check" a class/the project as a whole, refer to the Rubric section of `CLAUDE.md` to keep the project on track. Provide a percentage grade and what to do to improve.
 
 ## Rubric
+- Ignore sprint0_demo, as it is more of a test bed for using the GUI Library and PyTest
 - Project effectively uses Object-Oriented Programming
 - Project is sufficiently modular
 - Game logic and Visual logic are separate from each other
