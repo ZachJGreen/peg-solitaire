@@ -16,9 +16,6 @@ class App(Tk):
         self.MainWindow.pack(fill=tk.BOTH, expand=True)
        
 
-    def on_button_click(self):
-        self.label.config(text="guh")
-
 if __name__ == "__main__":
     app = App()
     app.mainloop()
