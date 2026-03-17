@@ -1,18 +1,13 @@
 import tkinter as tk
-from tkinter import Tk
-from tkinter import ttk
 from View.counter_view import CounterView
 from View.game_grid import GameGrid
 
 class GameSection(tk.Frame):
-    def __init__(self, parent, grid_size):
+    def __init__(self, parent, on_cell_click):
         super().__init__(parent)
 
-        # Add Counter Box
-        counter_box = CounterView(self)
-        counter_box.pack()
+        self.counter_view = CounterView(self)
+        self.counter_view.pack()
 
-        # Add Game Grid
-        grid = GameGrid(self, grid_size)
-        grid.pack(pady=50)
-
+        self.game_grid = GameGrid(self, on_cell_click)
+        self.game_grid.pack(pady=50)

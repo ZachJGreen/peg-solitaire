@@ -10,3 +10,6 @@ class BoardInfoView(tk.Frame):
         self.board_type_label.pack()
         self.board_size_label.pack()
 
+    def update(self, board_type, size):
+        self.board_type_label.config(text=f"Board Type: {board_type}")
+        self.board_size_label.config(text=f"Board Size: {size}")

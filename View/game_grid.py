@@ -1,13 +1,22 @@
 import tkinter as tk
-class GameGrid(tk.Frame):
+from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
-    def __init__(self, parent, grid_size):
+CELL_COLORS = {NOT_PLAYED: "gray", OPEN_SPACE: "white", PEG: "sienna"}
+
+class GameGrid(tk.Frame):
+    def __init__(self, parent, on_click):
         super().__init__(parent)
-        grid_buttons = []
-        for row in range(grid_size):
-            row_list = []
-            for col in range(grid_size):
-                cell = tk.Button(self, width=2, height=2, command=None)
-                row_list.append(cell)
-                cell.grid(row=row, column=col)
-            grid_buttons.append(row_list)
+        self._on_click = on_click
+
+    def update(self, board_grid, selected=None):
+        for widget in self.winfo_children():
+            widget.destroy()
+        for r, row in enumerate(board_grid):
+            for c, cell in enumerate(row):
+                if cell == NOT_PLAYED:
+                    btn = tk.Label(self, width=3, height=1, bg="gray", relief="flat")
+                else:
+                    color = "yellow" if selected == (r, c) else CELL_COLORS[cell]
+                    btn = tk.Button(self, width=3, height=1, bg=color,
+                                    command=lambda r=r, c=c: self._on_click(r, c))
+                btn.grid(row=r, column=c)
