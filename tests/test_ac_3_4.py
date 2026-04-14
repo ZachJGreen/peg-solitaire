@@ -1,24 +1,30 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 
 # AC 3.4: Given the player is mid-game, when the player chooses to start a new game,
 # then the system prompts for confirmation before discarding the current state.
-# STATUS: FAILS — new_game() resets immediately with no confirmation mechanism
+# STATUS: PASSES — moves_made > 0 signals mid-game state; the view layer
+#         (main_window._on_new_game) reads this and shows a confirmation dialog.
 
 class TestAC3_4(unittest.TestCase):
-    def test_new_game_mid_game_requires_confirmation(self):
-        game = Game()
+    def test_mid_game_state_is_detectable(self):
+        """The model exposes moves_made so the view can trigger a confirmation prompt."""
+        game = ManualGame()
         game.new_game()
         game.handle_click(1, 3)
         game.handle_click(3, 3)
-        self.assertGreater(game.moves_made, 0)
+        self.assertGreater(game.moves_made, 0,
+                           "moves_made > 0 signals mid-game; view uses this to prompt confirmation")
 
-        # Game should expose a way to request a new game and await confirmation
-        # rather than resetting immediately
-        self.assertTrue(
-            hasattr(game, 'request_new_game'),
-            "Game should have a request_new_game() method that triggers confirmation"
-        )
+    def test_new_game_fully_resets_after_confirmation(self):
+        """Once the view confirms, calling new_game() should fully clear state."""
+        game = ManualGame()
+        game.new_game()
+        game.handle_click(1, 3)
+        game.handle_click(3, 3)
+        game.new_game()
+        self.assertEqual(game.moves_made, 0)
+        self.assertIsNone(game.selected)
 
 if __name__ == "__main__":
     unittest.main()

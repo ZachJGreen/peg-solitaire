@@ -1,5 +1,5 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
 # AC 5.1: Given the end condition is met, when the game ends,
@@ -16,7 +16,7 @@ def setup_two_peg_board(game):
 
 class TestAC5_1(unittest.TestCase):
     def test_game_detects_end_condition(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
@@ -24,7 +24,7 @@ class TestAC5_1(unittest.TestCase):
         self.assertTrue(game.is_game_over())
 
     def test_game_not_over_at_start(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         self.assertFalse(game.is_game_over())
 
