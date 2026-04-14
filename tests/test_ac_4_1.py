@@ -1,5 +1,5 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 from Model.board import OPEN_SPACE, PEG
 
 # AC 4.1: Given the player selects a valid move, when the move is submitted,
@@ -8,7 +8,7 @@ from Model.board import OPEN_SPACE, PEG
 
 class TestAC4_1(unittest.TestCase):
     def test_valid_move_decrements_peg_count(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         initial_pegs = game.peg_count()
         game.handle_click(1, 3)
@@ -16,14 +16,14 @@ class TestAC4_1(unittest.TestCase):
         self.assertEqual(game.peg_count(), initial_pegs - 1)
 
     def test_valid_move_increments_moves_made(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         game.handle_click(1, 3)
         game.handle_click(3, 3)
         self.assertEqual(game.moves_made, 1)
 
     def test_valid_move_updates_board_cells(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         # (1,3) jumps over (2,3) to land on (3,3)
         game.handle_click(1, 3)

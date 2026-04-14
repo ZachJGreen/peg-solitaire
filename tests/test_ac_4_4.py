@@ -1,10 +1,10 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
 # AC 4.4: Given the game is over, when the player attempts a move,
 # then the system rejects the input.
-# STATUS: FAILS — handle_click() does not check is_game_over() before processing input
+# STATUS: PASSES — handle_click() checks is_game_over() before processing input
 
 def setup_two_peg_board(game):
     for r in range(game.board.size):
@@ -16,7 +16,7 @@ def setup_two_peg_board(game):
 
 class TestAC4_4(unittest.TestCase):
     def test_click_after_game_over_does_not_change_selection(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
@@ -28,7 +28,7 @@ class TestAC4_4(unittest.TestCase):
         self.assertIsNone(game.selected, "No selection should occur after game is over")
 
     def test_click_after_game_over_does_not_change_move_count(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)

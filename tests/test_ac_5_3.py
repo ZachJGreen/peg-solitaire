@@ -1,10 +1,10 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
 # AC 5.3: Given the game has ended, when the final state is displayed,
 # then the board is locked and no further moves can be made.
-# STATUS: FAILS — handle_click() still accepts input after game over
+# STATUS: PASSES — handle_click() guards against input after game over
 
 def setup_two_peg_board(game):
     for r in range(game.board.size):
@@ -16,7 +16,7 @@ def setup_two_peg_board(game):
 
 class TestAC5_3(unittest.TestCase):
     def test_board_locked_after_game_over(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)

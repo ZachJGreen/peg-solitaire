@@ -1,5 +1,5 @@
 import unittest
-from Model.game import Game
+from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
 # AC 4.3: Given a move results in a win or end condition, when the move is submitted,
@@ -18,7 +18,7 @@ def setup_two_peg_board(game):
 
 class TestAC4_3(unittest.TestCase):
     def test_final_move_triggers_game_over(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
@@ -26,7 +26,7 @@ class TestAC4_3(unittest.TestCase):
         self.assertTrue(game.is_game_over())
 
     def test_winning_move_leaves_one_peg(self):
-        game = Game()
+        game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)

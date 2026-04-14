@@ -1,9 +1,11 @@
 # Menu: ~33%, Game: ~67%
 from tkinter import Frame, PanedWindow, messagebox
 import tkinter as tk
-from Model.game import Game
+from Model.game import ManualGame, AutomatedGame
 from View.game_section import GameSection
 from View.menu_view import MenuView
+
+AUTOPLAY_DELAY_MS = 300
 
 class MainWindow(Frame):
     MENU_WIDTH_RATIO = 0.33
@@ -11,7 +13,8 @@ class MainWindow(Frame):
 
     def __init__(self, parent, dimX, dimY):
         super().__init__(parent, background="yellow")
-        self._game = Game()
+        self._game = ManualGame()
+        self._autoplay_running = False
 
         panes = PanedWindow(self, orient=tk.HORIZONTAL, background="blue")
         panes.pack(fill=tk.BOTH, expand=True, pady=10)
@@ -25,25 +28,80 @@ class MainWindow(Frame):
         panes.add(menu_frame)
         panes.add(game_frame)
 
-        self._menu = MenuView(menu_frame, on_new_game=self._on_new_game)
+        self._menu = MenuView(menu_frame,
+                              on_new_game=self._on_new_game,
+                              on_autoplay=self._on_autoplay,
+                              on_randomize=self._on_randomize)
         self._menu.pack()
 
         self._game_section = GameSection(game_frame, on_cell_click=self._on_cell_click)
         self._game_section.pack()
 
     def _on_new_game(self):
-        self._game.new_game()
-        self._menu.board_info.update("English", 7)
+        if self._game.board is not None and self._game.moves_made > 0:
+            if not messagebox.askyesno("New Game", "A game is in progress. Start a new game?"):
+                return
+        self._start_new_game()
+
+    def _start_new_game(self):
+        self._autoplay_running = False
+        board_type = self._menu.board_info.get_type()
+        size = self._menu.board_info.get_size()
+        if size is None or size < 3:
+            messagebox.showerror("Invalid Size", "Board size must be an integer >= 3.")
+            return
+        self._game = ManualGame()
+        self._game.new_game(board_type, size)
         self._refresh()
 
     def _on_cell_click(self, r, c):
+        if not isinstance(self._game, ManualGame):
+            return
         self._game.handle_click(r, c)
         self._refresh()
         if self._game.is_game_over():
-            pegs = self._game.peg_count()
-            msg = "You win!" if pegs == 1 else f"No moves left. {pegs} pegs remaining."
-            messagebox.showinfo("Game Over", msg)
+            self._show_game_over()
+
+    def _on_autoplay(self):
+        if self._game.board is None:
+            messagebox.showinfo("No Game", "Please start a new game first.")
+            return
+        # Transfer current board state to an AutomatedGame instance
+        automated = AutomatedGame()
+        automated.board = self._game.board
+        automated.moves_made = self._game.moves_made
+        automated.history = list(self._game.history)
+        self._game = automated
+        self._autoplay_running = True
+        self._run_autoplay()
+
+    def _run_autoplay(self):
+        if not self._autoplay_running:
+            return
+        moved = self._game.make_auto_move()
+        self._refresh()
+        if not moved or self._game.is_game_over():
+            self._autoplay_running = False
+            self._show_game_over()
+        else:
+            self.after(AUTOPLAY_DELAY_MS, self._run_autoplay)
+
+    def _on_randomize(self):
+        if self._game.board is None:
+            messagebox.showinfo("No Game", "Please start a new game first.")
+            return
+        self._game.randomize()
+        self._refresh()
+
+    def _show_game_over(self):
+        pegs = self._game.peg_count()
+        msg = "You win!" if pegs == 1 else f"No moves left. {pegs} pegs remaining."
+        if messagebox.askyesno("Game Over", msg + "\n\nPlay again?"):
+            self._start_new_game()
 
     def _refresh(self):
-        self._game_section.game_grid.update(self._game.board.grid, self._game.selected)
+        if self._game.board is None:
+            return
+        selected = getattr(self._game, 'selected', None)
+        self._game_section.game_grid.update(self._game.board.grid, selected)
         self._game_section.counter_view.update(self._game.moves_made, self._game.peg_count())
