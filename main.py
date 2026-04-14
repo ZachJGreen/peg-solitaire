@@ -9,7 +9,7 @@ class App(Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title("blah")
+        self.title("Sprint 3 Peg Solitaire")
         self.geometry(self.dimensions)
 
         self.MainWindow = MainWindow(self, self._dimension_x, self._dimension_y)
