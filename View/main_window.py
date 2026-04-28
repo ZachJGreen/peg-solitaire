@@ -50,8 +50,9 @@ class MainWindow(Frame):
         if size is None or size < 3:
             messagebox.showerror("Invalid Size", "Board size must be an integer >= 3.")
             return
+        recording_enabled = self._menu.board_info.is_recording_enabled()
         self._game = ManualGame()
-        self._game.new_game(board_type, size)
+        self._game.new_game(board_type, size, recording_enabled)
         self._refresh()
 
     def _on_cell_click(self, r, c):
@@ -71,6 +72,9 @@ class MainWindow(Frame):
         automated.board = self._game.board
         automated.moves_made = self._game.moves_made
         automated.history = list(self._game.history)
+        automated.redo_history = list(self._game.redo_history)
+        automated.recording_enabled = self._game.recording_enabled
+        automated.recorded_moves = list(self._game.recorded_moves)
         self._game = automated
         self._autoplay_running = True
         self._run_autoplay()

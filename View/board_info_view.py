@@ -23,6 +23,12 @@ class BoardInfoView(tk.Frame):
             ttk.Radiobutton(type_row, text=t.capitalize(),
                             variable=self._type_var, value=t).pack(anchor=tk.W)
 
+        record_row = tk.Frame(self, background="yellow")
+        record_row.pack(fill=tk.X, padx=5, pady=2)
+        self._recording_var = tk.BooleanVar(value=True)
+        ttk.Checkbutton(record_row, text="Record Game",
+                        variable=self._recording_var).pack(anchor=tk.W)
+
     def get_type(self):
         return self._type_var.get()
 
@@ -31,6 +37,12 @@ class BoardInfoView(tk.Frame):
             return int(self._size_var.get())
         except ValueError:
             return None
+
+    def is_recording_enabled(self):
+        return self._recording_var.get()
+
+    def set_recording_enabled(self, enabled):
+        self._recording_var.set(bool(enabled))
 
     def update(self, board_type, size):
         self._type_var.set(board_type)
