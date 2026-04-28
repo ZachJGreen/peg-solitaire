@@ -31,7 +31,9 @@ class MainWindow(Frame):
         self._menu = MenuView(menu_frame,
                               on_new_game=self._on_new_game,
                               on_autoplay=self._on_autoplay,
-                              on_randomize=self._on_randomize)
+                              on_randomize=self._on_randomize,
+                              on_undo=self._on_undo,
+                              on_redo=self._on_redo)
         self._menu.pack()
 
         self._game_section = GameSection(game_frame, on_cell_click=self._on_cell_click)
@@ -96,6 +98,20 @@ class MainWindow(Frame):
             return
         self._game.randomize()
         self._refresh()
+
+    def _on_undo(self):
+        self._autoplay_running = False
+        if self._game.undo_move():
+            if hasattr(self._game, "selected"):
+                self._game.selected = None
+            self._refresh()
+
+    def _on_redo(self):
+        self._autoplay_running = False
+        if self._game.redo_move():
+            if hasattr(self._game, "selected"):
+                self._game.selected = None
+            self._refresh()
 
     def _show_game_over(self):
         pegs = self._game.peg_count()

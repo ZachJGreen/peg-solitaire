@@ -2,13 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 
 class GameControlsView(tk.Frame):
-    def __init__(self, parent, on_new_game, on_autoplay=None, on_randomize=None):
+    def __init__(self, parent, on_new_game, on_autoplay=None, on_randomize=None,
+                 on_undo=None, on_redo=None):
         super().__init__(parent, background="red")
         self.new_game_button = ttk.Button(self, text="New Game", command=on_new_game)
         self.autoplay_button = ttk.Button(self, text="AutoPlay", command=on_autoplay)
         self.randomize_button = ttk.Button(self, text="Randomize", command=on_randomize)
-        self.undo_button = ttk.Button(self, text="Undo", command=None)
-        self.redo_button = ttk.Button(self, text="Redo", command=None)
+        self.undo_button = ttk.Button(self, text="Undo", command=on_undo)
+        self.redo_button = ttk.Button(self, text="Redo", command=on_redo)
 
         self.new_game_button.pack()
         self.autoplay_button.pack()
