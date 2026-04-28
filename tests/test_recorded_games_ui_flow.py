@@ -6,6 +6,7 @@ from View.game_controls_view import GameControlsView
 from View.main_window import MainWindow
 from View.menu_view import MenuView
 from View.recorded_games_view import (
+    MOVE_LOG_HEIGHT,
     RecordedGameEntry,
     format_move_log,
     format_recorded_games,
@@ -118,3 +119,10 @@ class TestRecordedGamesUIFlow:
         assert "Hide Moves" in source
         assert "Replay" in source
         assert "_on_replay" in source
+
+    def test_recorded_game_entry_uses_consistent_move_log_height(self):
+        source = inspect.getsource(RecordedGameEntry)
+
+        assert "height=MOVE_LOG_HEIGHT" in source
+        assert "height=min(max(game.move_count" not in source
+        assert MOVE_LOG_HEIGHT == 6

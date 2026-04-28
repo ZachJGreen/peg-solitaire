@@ -21,6 +21,7 @@ class MainWindow(Frame):
         self._recorded_games = RecordedGameSession()
         self._current_game_recorded = False
         self._game_over_randomizes_remaining = GAME_OVER_RANDOMIZE_LIMIT
+        self._replay_completed = False
 
         panes = PanedWindow(self, orient=tk.HORIZONTAL, background="blue")
         panes.pack(fill=tk.BOTH, expand=True, pady=10)
@@ -65,6 +66,7 @@ class MainWindow(Frame):
         self._game.new_game(board_type, size, recording_enabled)
         self._current_game_recorded = False
         self._game_over_randomizes_remaining = GAME_OVER_RANDOMIZE_LIMIT
+        self._replay_completed = False
         self._refresh()
 
     def _on_cell_click(self, r, c):
@@ -87,8 +89,11 @@ class MainWindow(Frame):
         automated.redo_history = list(self._game.redo_history)
         automated.recording_enabled = self._game.recording_enabled
         automated.recorded_moves = list(self._game.recorded_moves)
+        automated.recorded_events = list(self._game.recorded_events)
+        automated.starting_grid = [row[:] for row in self._game.starting_grid]
         self._game = automated
         self._autoplay_running = True
+        self._replay_completed = False
         self._run_autoplay()
 
     def _run_autoplay(self):
@@ -96,6 +101,13 @@ class MainWindow(Frame):
             return
         moved = self._game.make_auto_move()
         self._refresh()
+        if isinstance(self._game, AutomatedGame) and self._game.is_replay_active():
+            if not moved:
+                self._autoplay_running = False
+                self._replay_completed = True
+            else:
+                self.after(AUTOPLAY_DELAY_MS, self._run_autoplay)
+            return
         if not moved or self._game.is_game_over():
             self._autoplay_running = False
             self._show_game_over()
@@ -105,6 +117,8 @@ class MainWindow(Frame):
     def _on_randomize(self):
         if self._game.board is None:
             messagebox.showinfo("No Game", "Please start a new game first.")
+            return
+        if getattr(self, "_replay_completed", False):
             return
         self._game.randomize()
         self._refresh()
@@ -138,7 +152,18 @@ class MainWindow(Frame):
     def _on_show_recorded_games(self):
         if not hasattr(self, "_recorded_games"):
             self._recorded_games = RecordedGameSession()
-        RecordedGamesView(self, self._recorded_games.games)
+        RecordedGamesView(self, self._recorded_games.games, self._on_replay_recorded_game)
+
+    def _on_replay_recorded_game(self, recorded_game):
+        self._autoplay_running = False
+        replay = AutomatedGame()
+        replay.load_replay(recorded_game)
+        self._game = replay
+        self._game_over_randomizes_remaining = GAME_OVER_RANDOMIZE_LIMIT
+        self._replay_completed = False
+        self._refresh()
+        self._autoplay_running = True
+        self.after(AUTOPLAY_DELAY_MS, self._run_autoplay)
 
     def _try_game_over_randomize(self):
         if self._game_over_randomizes_remaining <= 0:
