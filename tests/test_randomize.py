@@ -72,6 +72,14 @@ class TestRandomize:
         game.randomize()
         assert game.history == []
 
+    def test_randomize_preserves_recorded_move_log_for_replay_summary(self):
+        game = ManualGame()
+        game.new_game(recording_enabled=True)
+        game.handle_click(1, 3)
+        game.handle_click(3, 3)
+        game.randomize()
+        assert game.recorded_moves == [(1, 3, 3, 3)]
+
     def test_randomize_available_on_automated_game(self):
         game = AutomatedGame()
         game.new_game()

@@ -5,7 +5,12 @@ from Model.recorded_game_session import RecordedGameSession
 from View.game_controls_view import GameControlsView
 from View.main_window import MainWindow
 from View.menu_view import MenuView
-from View.recorded_games_view import format_recorded_games
+from View.recorded_games_view import (
+    MOVE_LOG_HEIGHT,
+    RecordedGameEntry,
+    format_move_log,
+    format_recorded_games,
+)
 
 
 class FakeBoardInfo:
@@ -80,7 +85,7 @@ class TestRecordedGamesUIFlow:
     def test_format_recorded_games_shows_empty_session_message(self):
         assert format_recorded_games([]) == "No recorded games this session."
 
-    def test_format_recorded_games_lists_recorded_moves(self):
+    def test_format_recorded_games_lists_game_summaries(self):
         window = make_window()
         window._game.new_game(board_type="english", size=7, recording_enabled=True)
         window._game.handle_click(1, 3)
@@ -89,5 +94,35 @@ class TestRecordedGamesUIFlow:
 
         text = format_recorded_games(window._recorded_games.games)
 
-        assert "Game 1: English board, size 7" in text
+        assert "Game 1: Lost" in text
+        assert "Moves: 1" in text
+        assert f"Remaining pegs: {window._game.peg_count()}" in text
+        assert "(1, 3) -> (3, 3)" not in text
+
+    def test_format_move_log_lists_recorded_moves_for_dropdown(self):
+        window = make_window()
+        window._game.new_game(board_type="english", size=7, recording_enabled=True)
+        window._game.handle_click(1, 3)
+        window._game.handle_click(3, 3)
+        window._record_current_game()
+
+        text = format_move_log(window._recorded_games.games[0])
+
         assert "1. (1, 3) -> (3, 3)" in text
+
+    def test_recorded_game_entry_has_win_loss_colors_and_replay_button(self):
+        source = inspect.getsource(RecordedGameEntry)
+
+        assert "WIN_COLOR" in source
+        assert "LOSS_COLOR" in source
+        assert "Show Moves" in source
+        assert "Hide Moves" in source
+        assert "Replay" in source
+        assert "_on_replay" in source
+
+    def test_recorded_game_entry_uses_consistent_move_log_height(self):
+        source = inspect.getsource(RecordedGameEntry)
+
+        assert "height=MOVE_LOG_HEIGHT" in source
+        assert "height=min(max(game.move_count" not in source
+        assert MOVE_LOG_HEIGHT == 6
