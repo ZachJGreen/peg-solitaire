@@ -6,6 +6,12 @@ class RecordedGame:
     board_type: str
     size: int
     moves: list
+    remaining_pegs: int
+    won: bool
+
+    @property
+    def move_count(self):
+        return len(self.moves)
 
 
 class RecordedGameSession:
@@ -25,5 +31,7 @@ class RecordedGameSession:
             board_type=game.board.type,
             size=game.board.size,
             moves=moves,
+            remaining_pegs=game.peg_count(),
+            won=game.peg_count() == 1,
         ))
         return True

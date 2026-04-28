@@ -22,6 +22,9 @@ class TestRecordedGameSession:
         assert recorded.board_type == "english"
         assert recorded.size == 7
         assert recorded.moves == [(1, 3, 3, 3)]
+        assert recorded.remaining_pegs == game.peg_count()
+        assert not recorded.won
+        assert recorded.move_count == 1
 
     def test_does_not_record_when_game_recording_was_disabled(self):
         game = ManualGame()
