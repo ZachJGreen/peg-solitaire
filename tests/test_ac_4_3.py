@@ -1,4 +1,3 @@
-import unittest
 from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
@@ -16,14 +15,14 @@ def setup_two_peg_board(game):
     game.board.grid[3][2] = PEG
     game.board.grid[3][3] = PEG
 
-class TestAC4_3(unittest.TestCase):
+class TestAC4_3:
     def test_final_move_triggers_game_over(self):
         game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
         game.handle_click(3, 4)
-        self.assertTrue(game.is_game_over())
+        assert game.is_game_over()
 
     def test_winning_move_leaves_one_peg(self):
         game = ManualGame()
@@ -31,7 +30,4 @@ class TestAC4_3(unittest.TestCase):
         setup_two_peg_board(game)
         game.handle_click(3, 2)
         game.handle_click(3, 4)
-        self.assertEqual(game.peg_count(), 1)
-
-if __name__ == "__main__":
-    unittest.main()
+        assert game.peg_count() == 1

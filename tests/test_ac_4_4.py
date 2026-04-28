@@ -1,4 +1,3 @@
-import unittest
 from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
@@ -14,18 +13,18 @@ def setup_two_peg_board(game):
     game.board.grid[3][2] = PEG
     game.board.grid[3][3] = PEG
 
-class TestAC4_4(unittest.TestCase):
+class TestAC4_4:
     def test_click_after_game_over_does_not_change_selection(self):
         game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
         game.handle_click(3, 4)
-        self.assertTrue(game.is_game_over())
+        assert game.is_game_over()
 
         # Input after game over should be fully rejected
         game.handle_click(3, 4)  # click the remaining peg
-        self.assertIsNone(game.selected, "No selection should occur after game is over")
+        assert game.selected is None, "No selection should occur after game is over"
 
     def test_click_after_game_over_does_not_change_move_count(self):
         game = ManualGame()
@@ -35,7 +34,4 @@ class TestAC4_4(unittest.TestCase):
         game.handle_click(3, 4)
         moves_at_end = game.moves_made
         game.handle_click(3, 4)
-        self.assertEqual(game.moves_made, moves_at_end)
-
-if __name__ == "__main__":
-    unittest.main()
+        assert game.moves_made == moves_at_end

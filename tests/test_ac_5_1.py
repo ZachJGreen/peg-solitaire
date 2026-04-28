@@ -1,4 +1,3 @@
-import unittest
 from Model.game import ManualGame
 from Model.board import NOT_PLAYED, OPEN_SPACE, PEG
 
@@ -14,19 +13,16 @@ def setup_two_peg_board(game):
     game.board.grid[3][2] = PEG
     game.board.grid[3][3] = PEG
 
-class TestAC5_1(unittest.TestCase):
+class TestAC5_1:
     def test_game_detects_end_condition(self):
         game = ManualGame()
         game.new_game()
         setup_two_peg_board(game)
         game.handle_click(3, 2)
         game.handle_click(3, 4)
-        self.assertTrue(game.is_game_over())
+        assert game.is_game_over()
 
     def test_game_not_over_at_start(self):
         game = ManualGame()
         game.new_game()
-        self.assertFalse(game.is_game_over())
-
-if __name__ == "__main__":
-    unittest.main()
+        assert not game.is_game_over()
