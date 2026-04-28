@@ -106,11 +106,24 @@ class Board:
     def is_game_over(self):
         return len(self.get_valid_moves()) == 0
 
-    def randomize(self, num_moves=20):
-        """Apply random valid moves to produce a randomized board state."""
-        for _ in range(num_moves):
-            moves = self.get_valid_moves()
-            if not moves:
+    def randomize(self):
+        """Shuffle pegs and open spaces without changing their counts."""
+        playable_cells = [
+            (r, c)
+            for r in range(self.size)
+            for c in range(self.size)
+            if self.grid[r][c] != NOT_PLAYED
+        ]
+        values = [self.grid[r][c] for r, c in playable_cells]
+        if len(set(values)) < 2:
+            return False
+
+        original = values[:]
+        for _ in range(10):
+            random.shuffle(values)
+            if values != original:
                 break
-            fr, fc, tr, tc = random.choice(moves)
-            self.make_move(fr, fc, tr, tc)
+
+        for (r, c), value in zip(playable_cells, values):
+            self.grid[r][c] = value
+        return values != original

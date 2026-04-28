@@ -10,11 +10,17 @@ class Game:
         self.board = None
         self.moves_made = 0
         self.history = []
+        self.redo_history = []
+        self.recording_enabled = True
+        self.recorded_moves = []
 
-    def new_game(self, board_type="english", size=7):
+    def new_game(self, board_type="english", size=7, recording_enabled=True):
         self.board = Board(board_type, size)
         self.moves_made = 0
         self.history = []
+        self.redo_history = []
+        self.recording_enabled = recording_enabled
+        self.recorded_moves = []
 
     def is_game_over(self):
         return self.board is not None and self.board.is_game_over()
@@ -25,14 +31,47 @@ class Game:
     def randomize(self):
         """Randomize the current board state and reset counters."""
         if self.board is not None:
-            self.board.randomize()
+            changed = self.board.randomize()
             self.moves_made = 0
             self.history = []
+            self.redo_history = []
+            self.recorded_moves = []
+            return changed
+        return False
 
     def _execute_move(self, fr, fc, tr, tc):
+        self._apply_move(fr, fc, tr, tc)
+        self.redo_history = []
+
+    def _apply_move(self, fr, fc, tr, tc):
         self.board.make_move(fr, fc, tr, tc)
         self.moves_made += 1
         self.history.append((fr, fc, tr, tc))
+        if self.recording_enabled:
+            self.recorded_moves.append((fr, fc, tr, tc))
+
+    def undo_move(self):
+        if self.board is None or not self.history:
+            return False
+
+        fr, fc, tr, tc = self.history.pop()
+        mr, mc = (fr + tr) // 2, (fc + tc) // 2
+        self.board.grid[fr][fc] = PEG
+        self.board.grid[mr][mc] = PEG
+        self.board.grid[tr][tc] = OPEN_SPACE
+        self.moves_made -= 1
+        self.redo_history.append((fr, fc, tr, tc))
+        if self.recording_enabled and self.recorded_moves:
+            self.recorded_moves.pop()
+        return True
+
+    def redo_move(self):
+        if self.board is None or not self.redo_history:
+            return False
+
+        fr, fc, tr, tc = self.redo_history.pop()
+        self._apply_move(fr, fc, tr, tc)
+        return True
 
 
 class ManualGame(Game):
@@ -42,8 +81,8 @@ class ManualGame(Game):
         super().__init__()
         self.selected = None
 
-    def new_game(self, board_type="english", size=7):
-        super().new_game(board_type, size)
+    def new_game(self, board_type="english", size=7, recording_enabled=True):
+        super().new_game(board_type, size, recording_enabled)
         self.selected = None
 
     def handle_click(self, row, col):
