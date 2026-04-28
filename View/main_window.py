@@ -2,8 +2,10 @@
 from tkinter import Frame, PanedWindow, messagebox
 import tkinter as tk
 from Model.game import ManualGame, AutomatedGame
+from Model.recorded_game_session import RecordedGameSession
 from View.game_section import GameSection
 from View.menu_view import MenuView
+from View.recorded_games_view import RecordedGamesView
 
 AUTOPLAY_DELAY_MS = 300
 
@@ -15,6 +17,8 @@ class MainWindow(Frame):
         super().__init__(parent, background="yellow")
         self._game = ManualGame()
         self._autoplay_running = False
+        self._recorded_games = RecordedGameSession()
+        self._current_game_recorded = False
 
         panes = PanedWindow(self, orient=tk.HORIZONTAL, background="blue")
         panes.pack(fill=tk.BOTH, expand=True, pady=10)
@@ -33,7 +37,8 @@ class MainWindow(Frame):
                               on_autoplay=self._on_autoplay,
                               on_randomize=self._on_randomize,
                               on_undo=self._on_undo,
-                              on_redo=self._on_redo)
+                              on_redo=self._on_redo,
+                              on_show_recorded_games=self._on_show_recorded_games)
         self._menu.pack()
 
         self._game_section = GameSection(game_frame, on_cell_click=self._on_cell_click)
@@ -53,8 +58,10 @@ class MainWindow(Frame):
             messagebox.showerror("Invalid Size", "Board size must be an integer >= 3.")
             return
         recording_enabled = self._menu.board_info.is_recording_enabled()
+        self._record_current_game()
         self._game = ManualGame()
         self._game.new_game(board_type, size, recording_enabled)
+        self._current_game_recorded = False
         self._refresh()
 
     def _on_cell_click(self, r, c):
@@ -113,7 +120,25 @@ class MainWindow(Frame):
                 self._game.selected = None
             self._refresh()
 
+    def _record_current_game(self):
+        if not hasattr(self, "_recorded_games"):
+            self._recorded_games = RecordedGameSession()
+        if not hasattr(self, "_current_game_recorded"):
+            self._current_game_recorded = False
+        if self._current_game_recorded:
+            return False
+        recorded = self._recorded_games.add_game(self._game)
+        if recorded:
+            self._current_game_recorded = True
+        return recorded
+
+    def _on_show_recorded_games(self):
+        if not hasattr(self, "_recorded_games"):
+            self._recorded_games = RecordedGameSession()
+        RecordedGamesView(self, self._recorded_games.games)
+
     def _show_game_over(self):
+        self._record_current_game()
         pegs = self._game.peg_count()
         msg = "You win!" if pegs == 1 else f"No moves left. {pegs} pegs remaining."
         if messagebox.askyesno("Game Over", msg + "\n\nPlay again?"):
