@@ -7,3 +7,4 @@ from View.board_info_view import BoardInfoView
 from View.game_controls_view import GameControlsView
 from View.settings_view import SettingsView
 from View.recorded_games_view import RecordedGamesView
+from View.game_over_dialog import GameOverDialog

@@ -31,11 +31,13 @@ class Game:
     def randomize(self):
         """Randomize the current board state and reset counters."""
         if self.board is not None:
-            self.board.randomize()
+            changed = self.board.randomize()
             self.moves_made = 0
             self.history = []
             self.redo_history = []
             self.recorded_moves = []
+            return changed
+        return False
 
     def _execute_move(self, fr, fc, tr, tc):
         self._apply_move(fr, fc, tr, tc)
